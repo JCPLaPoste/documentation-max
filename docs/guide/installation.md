@@ -1,3 +1,14 @@
+---
+layout: default
+title: "Mode Opératoire — Installation et utilisation de MAX sous VS Code"
+---
+
+## 📑 Sommaire
+* TOC
+{:toc}
+
+---
+
 # Mode Opératoire — Installation et utilisation de MAX sous VS Code
 ## Testeurs — Guide pas à pas
 

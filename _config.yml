@@ -1,0 +1,11 @@
+﻿title: "Documentation MAX V6"
+description: "Documentation technique et fonctionnelle de la plateforme MAX V6 (Module d'Assistance eXpert)"
+theme: jekyll-theme-cayman
+kramdown:
+  toc_levels: 1..3
+  parse_block_html: true
+  auto_ids: true
+markdown: kramdown
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag

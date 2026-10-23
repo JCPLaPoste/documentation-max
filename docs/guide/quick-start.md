@@ -1,3 +1,14 @@
+---
+layout: default
+title: "Quick Start — MAX V6"
+---
+
+## 📑 Sommaire
+* TOC
+{:toc}
+
+---
+
 # Quick Start — MAX V6
 ## Démarrer en 5 minutes
 
@@ -139,6 +150,7 @@ GITHUB_MODEL=gpt-5.4                   # Modèle LLM (gpt-4o, claude-sonnet-4-5�
 
 | Document | Contenu |
 |---|---|
-| [Présentation_MAX_V6.md](Présentation_MAX_V6.md) | Valeur ajoutée, agents IA, fonctionnalités détaillées |
-| [ARCHITECTURE_MAX_V6.md](ARCHITECTURE_MAX_V6.md) | Architecture technique complète (composants, API, ports) |
-| [modop_Install_MAX_V6.md](modop_Install_MAX_V6.md) | Guide d'installation complet (proxy, Docker, DiversIT) |
+| [Présentation MAX V6](presentation.html) | Valeur ajoutée, agents IA, fonctionnalités détaillées |
+| [Architecture MAX V6](../architecture/architecture.html) | Architecture technique complète (composants, API, ports) |
+| [Guide d'installation](installation.html) | Guide d'installation complet (proxy, Docker, DiversIT) |
+

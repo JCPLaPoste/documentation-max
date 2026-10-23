@@ -1,3 +1,14 @@
+---
+layout: default
+title: "MAX — Présentation Générale"
+---
+
+## 📑 Sommaire
+* TOC
+{:toc}
+
+---
+
 # MAX — Présentation Générale
 ## Maintenance Augmentée et Accélérée des Tests · La Poste
 
@@ -323,3 +334,4 @@ node server.js
 
 > Les gains varient selon la complexité du projet et l'expérience de l'utilisateur.
 > MAX produit une base solide ; la relecture humaine et l'ajustement métier restent indispensables.
+

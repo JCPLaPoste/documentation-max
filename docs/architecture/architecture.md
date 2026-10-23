@@ -1,3 +1,14 @@
+---
+layout: default
+title: "Architecture Complète — MAX V6"
+---
+
+## 📑 Sommaire
+* TOC
+{:toc}
+
+---
+
 # Architecture Complète — MAX V6
 ## Maintenance Augmentée et Accélérée des Tests — La Poste
 
@@ -469,3 +480,4 @@ MAX_PI_V2/
 | **back-cucumber** | **3002** | Processus enfant (interne, non exposé) |
 | **vscode-copilot-proxy** | **3099** | Proxy LLM VS Code (local uniquement) |
 | **JIRA La Poste** | **443** (HTTPS) | `jira.net.extra.laposte.fr` (VPN requis) |
+

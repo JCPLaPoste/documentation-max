@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page.title | default: site.title }}</title>
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <style>
+      .page-header {
+        background-color: #0b2545;
+        background-image: linear-gradient(120deg, #133a6f, #001e3d);
+        padding: 2.5rem 2rem;
+      }
+      .project-name { font-size: 2.25rem; }
+      .project-tagline { font-size: 1.15rem; opacity: 0.9; }
+      .main-content { max-width: 72rem; }
+      .doc-layout {
+        display: flex;
+        gap: 2rem;
+      }
+      .doc-sidebar {
+        width: 260px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 20px;
+        align-self: flex-start;
+        background: #f8f9fa;
+        border: 1px solid #e1e4e8;
+        border-radius: 8px;
+        padding: 1rem 1.2rem;
+        font-size: 0.92rem;
+      }
+      .doc-sidebar h4 {
+        margin: 0.8rem 0 0.3rem 0;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #586069;
+        letter-spacing: 0.5px;
+      }
+      .doc-sidebar h4:first-child { margin-top: 0; }
+      .doc-sidebar ul {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 0.8rem;
+      }
+      .doc-sidebar li { margin: 0.25rem 0; }
+      .doc-sidebar a {
+        color: #0366d6;
+        text-decoration: none;
+      }
+      .doc-sidebar a:hover { text-decoration: underline; }
+      .doc-body { flex: 1; min-width: 0; }
+      .in-page-toc {
+        background: #eef3f8;
+        border-left: 4px solid #133a6f;
+        padding: 1rem 1.5rem;
+        border-radius: 4px;
+        margin-bottom: 2rem;
+      }
+      .in-page-toc ul { margin-bottom: 0; }
+      @media (max-width: 850px) {
+        .doc-layout { flex-direction: column; }
+        .doc-sidebar { width: 100%; position: static; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="page-header" role="banner">
+      <h1 class="project-name">{{ site.title }}</h1>
+      <h2 class="project-tagline">{{ page.description | default: site.description }}</h2>
+      <a href="{{ site.github.repository_url | default: 'https://github.com/jcplaposte/documentation-max' }}" class="btn" target="_blank">Voir sur GitHub</a>
+      <a href="{{ '/' | relative_url }}" class="btn">Accueil Doc</a>
+    </header>
+
+    <main id="content" class="main-content" role="main">
+      <div class="doc-layout">
+        <aside class="doc-sidebar">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="{{ '/' | relative_url }}">🏠 Accueil</a></li>
+          </ul>
+          <h4>Guides MAX V6</h4>
+          <ul>
+            <li><a href="{{ '/docs/guide/quick-start.html' | relative_url }}">🚀 Quick Start</a></li>
+            <li><a href="{{ '/docs/guide/presentation.html' | relative_url }}">📋 Présentation</a></li>
+            <li><a href="{{ '/docs/guide/installation.html' | relative_url }}">⚙️ Installation</a></li>
+            <li><a href="{{ '/docs/guide/release-notes.html' | relative_url }}">📝 Notes de version</a></li>
+          </ul>
+          <h4>Architecture</h4>
+          <ul>
+            <li><a href="{{ '/docs/architecture/architecture.html' | relative_url }}">🏛️ Architecture V6</a></li>
+          </ul>
+          <h4>Composants</h4>
+          <ul>
+            <li><a href="{{ '/docs/modules/backend.html' | relative_url }}">📦 Backend (back-max)</a></li>
+            <li><a href="{{ '/docs/modules/frontend.html' | relative_url }}">🖥️ Frontend (front-max)</a></li>
+            <li><a href="{{ '/docs/modules/agents.html' | relative_url }}">🤖 Agents Copilot</a></li>
+            <li><a href="{{ '/docs/modules/docker.html' | relative_url }}">🐳 Docker Compose</a></li>
+            <li><a href="{{ '/docs/modules/proxy.html' | relative_url }}">🔌 Proxy Copilot</a></li>
+            <li><a href="{{ '/docs/modules/bip-analyzer.html' | relative_url }}">📊 Analyseur BIP</a></li>
+            <li><a href="{{ '/docs/modules/cucumber.html' | relative_url }}">🥒 Parser Cucumber</a></li>
+          </ul>
+        </aside>
+
+        <article class="doc-body">
+          {{ content }}
+        </article>
+      </div>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.title }}</a> est maintenu par <a href="{{ site.github.owner_url }}">jcplaposte</a>.</span>
+      </footer>
+    </main>
+  </body>
+</html>
