@@ -1,0 +1,471 @@
+# Architecture Complète — MAX V6
+## Maintenance Augmentée et Accélérée des Tests — La Poste
+
+---
+
+## 1. Vue d'ensemble
+
+MAX est une plateforme web de génération et de maintenance de tests fonctionnels BDD, pilotée par l'IA. Elle couvre un pipeline complet : **SPECS → User Stories → Scénarios Gherkin → Tickets JIRA/Xray**.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           NAVIGATEUR WEB                                │
+│                                                                         │
+│   ┌──────────────┐    ┌────────────────────┐    ┌───────────────────┐  │
+│   │  front-max   │    │ front-specs_        │    │ front-tests_      │  │
+│   │  (login +    │    │ analyzer            │    │ generator         │  │
+│   │   menu)      │    │ (Analyseur SPECS    │    │ (Gherkin + JIRA   │  │
+│   │  port 8082   │    │  + Génération US)   │    │  publication)     │  │
+│   └──────┬───────┘    └────────────────────┘    └───────────────────┘  │
+└──────────┼──────────────────────────────────────────────────────────────┘
+           │ HTTP/REST (port 8082)
+┌──────────┼──────────────────────────────────────────────────────────────┐
+│          ▼           BACK-MAX (Node.js — port 8082)                     │
+│  ┌───────────────┐  ┌─────────────────┐  ┌──────────────────────────┐  │
+│  │  server.js    │  │ routes/specs.js  │  │ routes/tests.js           │  │
+│  │  Auth JIRA    │  │ /specs-app/*     │  │ /tests-app/*              │  │
+│  │  Sessions     │  │ Analyseur SPECS  │  │ Générateur Gherkin        │  │
+│  │  Routing      │  │ Génération US    │  │ Publication Xray/JIRA     │  │
+│  └───────────────┘  └─────────────────┘  └──────────────────────────┘  │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐    │
+│  │  back-cucumber/server.js (process enfant — port interne 3002)   │    │
+│  │  Lecture / édition scénarios Gherkin dans JIRA (Xray)           │    │
+│  └─────────────────────────────────────────────────────────────────┘    │
+└──────────────────────────────────────────────────────────────────────────┘
+           │                             │
+     ┌─────▼──────┐              ┌───────▼────────────────────┐
+     │ LLM / IA   │              │  JIRA La Poste             │
+     │ Copilot    │              │  jira.net.extra.laposte.fr │
+     │ via proxy  │              │  REST API v2               │
+     │ port 3099  │              │  Xray /raven/1.0/          │
+     └────────────┘              └────────────────────────────┘
+```
+
+---
+
+## 2. Composants backend
+
+### 2.1 `back-max/server.js` — Serveur principal (port 8082)
+
+Point d'entrée unique. Responsabilités :
+
+| Responsabilité | Détail |
+|---|---|
+| **Authentification** | Vérifie le PAT JIRA via `GET /rest/api/2/myself`, crée une session 8h |
+| **Routing** | Réécrit `req.url` et dispatch vers `specsApp` (`/specs-app/*`) ou `testsApp` (`/tests-app/*`) |
+| **Sessions** | Store en mémoire (`middleware/sessions.js`), nettoyage horaire |
+| **Cucumber** | Spawn le processus enfant `back-cucumber/server.js` sur port 3002 |
+| **Static** | Sert `front-max/` (menu principal + login) |
+| **DEV_MODE** | Si `DEV_MODE=true` + JIRA inaccessible → bypass vers "Dev User" |
+
+**Routes d'authentification exposées :**
+```
+POST /max-auth/login    → valide PAT JIRA, retourne sessionId
+POST /max-auth/verify   → vérifie qu'une session est toujours valide
+POST /max-auth/logout   → invalide la session
+```
+
+---
+
+### 2.2 `back-max/routes/specs.js` — Analyseur SPECS (monté `/specs-app/*`)
+
+| Route | Description |
+|---|---|
+| `GET  /health` | Vérification état service |
+| `POST /parse-docx` | Parse un fichier .docx → texte brut (multer) |
+| `POST /analyze-stream` | Stream SSE → analyse SPECS via LLM (system prompt : `max-specs-analyzer.agent.md`) |
+| `POST /generate-us-stream` | Stream SSE → génère US + CA depuis l'analyse (system prompt : `max-us-generator.agent.md`) |
+| `POST /save-md` | Sauvegarde le résultat dans `services/specs/temp/temp.md` |
+| `POST /api/jira/issue` | Charge un ticket JIRA (description + résumé) |
+| `POST /download-docx` | Convertit le Markdown en fichier .docx (bibliothèque `docx`) |
+
+**Modèle LLM utilisé :** `process.env.GITHUB_MODEL` (défaut `gpt-5.4`) via proxy Copilot (port 3099).
+
+---
+
+### 2.3 `back-max/routes/tests.js` — Générateur Gherkin (monté `/tests-app/*`)
+
+| Route | Description |
+|---|---|
+| `GET  /health` | Vérification état service |
+| `POST /parse-docx` | Parse .docx → texte brut |
+| `POST /chat-stream` | Stream SSE → génère scénarios Gherkin (chat continu, historique messages) |
+| `POST /generate-stream` | Stream SSE → génération directe (mode non-chat) |
+| `POST /format-xray-stream` | Stream SSE → reformatage Xray, sauvegarde `tests.md` |
+| `POST /api/jira/issue` | Charge un ticket JIRA source (US/Exigence) |
+| **`POST /api/jira/publish`** | **Publication Xray** : import feature file → mise à jour description + étiquette |
+| `POST /api/jira/delete-tickets` | Suppression de tickets créés (annulation) |
+| `POST /download-docx` | Export .docx des scénarios |
+
+**Flux de publication JIRA (`/api/jira/publish`) :**
+```
+Pour chaque bloc Gherkin sélectionné :
+  1. prepareGherkin() — normalise mots-clés FR, extrait du Markdown
+  2. importFeatureToXray() — POST multipart vers /rest/raven/1.0/import/feature
+  3. Retry automatique en anglais si parse error Xray
+  4. Pour chaque ticket créé (successKeys) :
+       a. fetchJiraIssue() → récupère le Summary (titre du scénario)
+       b. extractCaFromSummary() → extrait CA-001 et titre
+       c. buildTicketDescription() → construit description 2 lignes :
+            "Test du CA-001 - [titre]"
+            "Ce test couvre la Fonctionnalité US-001 - [titre US]"
+       d. updateJiraIssueDescription() → PUT fields { description, labels: ["Généré_par_IA_MAX"] }
+```
+
+---
+
+### 2.4 `back-max/services/back-cucumber/server.js` — Parse Cucumber V2 (port 3002)
+
+Processus enfant lancé par `server.js`. Gère la vue "Modifier un scénario Gherkin" :
+- Lit les tests Xray existants dans JIRA
+- Permet l'édition et la mise à jour des scénarios
+- Authentification par session PAT (stockée dans `back-cucumber/config/`)
+
+Proxyfié par `server.js` via réécriture d'URL (préfixe `/cucumber-app/*`).
+
+---
+
+## 3. Composants frontend
+
+### 3.1 `front-max/` — Interface principale
+
+Sert le menu latéral et le shell applicatif. **Ne contient pas de logique métier IA.**
+
+**Pages :**
+- `login.html` — Saisie du PAT JIRA, authentification, stockage `sessionStorage`
+- `index.html` — Menu latéral + panneau de chat embarqué
+
+**Modules chargés en iframe ou chat :**
+
+| Menu | Mode | URL cible |
+|---|---|---|
+| Analyseur de SPECS et Génération d'US | Chat SSE | `/specs-app/` |
+| Génération de Cas de Tests Fonctionnels en Gherkin | Chat SSE | `/tests-app/` |
+| Modifier un scénario Gherkin d'un Ticket Test | iFrame | `/cucumber-app/` (back-cucumber port 3002) |
+
+---
+
+### 3.2 `front-tests_generator/` — Générateur de tests (servi par `/tests-app/`)
+
+Interface de génération Gherkin embarquée dans le chat. Fonctionnalités :
+
+**Chargement de l'exigence source :**
+- 🎫 Charger une exigence JIRA (saisie clé ticket, appel `/api/jira/issue`)
+- 📄 Charger un fichier .md
+- 📎 Charger un fichier .docx (via `/parse-docx`)
+
+**Génération :**
+- Chat SSE temps-réel avec l'IA (stream `/chat-stream`)
+- Affichage progressif des scénarios Gherkin dans la zone de résultat
+- Découpe automatique en blocs sélectionnables (par `## US-xxx` ou `Feature:`)
+
+**Téléchargement :**
+- ⬇️ Exporter en `.md`
+- ⬇️ Exporter en `.docx`
+
+**Publication JIRA (étape 2) :**
+- 📤 Sélection des blocs à publier + saisie clé projet
+- Étape 1/2 : formatage XRAY via LLM (sauvegarde `tests.md`)
+- Étape 2/2 : import Xray REST + mise à jour description + label
+- 🗑️ Bouton "Annuler les Tickets" (suppression possible après publication)
+
+---
+
+### 3.3 `front-specs_analyzer/` — Analyseur SPECS (servi par `/specs-app/`)
+
+Interface d'analyse de cahiers des charges. Fonctionnalités :
+
+**Chargement :**
+- 📄 Charger un fichier .md
+- 📎 Charger un fichier .docx
+- 🎫 Charger un ticket JIRA
+
+**Génération :**
+- 📋 Analyser les SPECS → structure EF-001, acteurs, ambiguïtés (stream `/analyze-stream`)
+- 📋 Générer les US + CA Gherkin (stream `/generate-us-stream`)
+
+**Export :**
+- ⬇️ Télécharger en .md
+- ⬇️ Télécharger en .docx
+- 🎫 Formater en JIRA (publication US dans JIRA)
+
+---
+
+## 4. Agents GitHub Copilot (`.github/agents/`)
+
+Utilisés dans VS Code Copilot Chat (`@max-...`). Indépendants du backend web.
+
+### `max-specs-analyzer.agent.md`
+
+| Propriété | Valeur |
+|---|---|
+| **Nom** | MAX — Analyseur de SPECS |
+| **Modèle** | Claude Sonnet 4.5 (copilot) |
+| **Outils** | `read`, `search` |
+| **Déclenchement** | analyser SPECS, cahier des charges, document fonctionnel, .md, .docx |
+
+**Ce qu'il fait :**
+1. Lit le document SPECS (fichier `.md`, `.docx` ou contenu collé)
+2. Identifie les acteurs et rôles métier
+3. Extrait les exigences fonctionnelles (EF-001...) et non-fonctionnelles (ENF-001...)
+4. Structure : acteurs / EF / ENF / zones d'ambiguïté / périmètre exclu
+5. **Ne génère pas** de User Stories (délégué à l'agent suivant)
+
+---
+
+### `max-us-generator.agent.md`
+
+| Propriété | Valeur |
+|---|---|
+| **Nom** | MAX — Générateur US & CA |
+| **Modèle** | Claude Sonnet 4.5 (copilot) |
+| **Outils** | `read`, `search` |
+| **Déclenchement** | générer user stories, US, critères d'acceptation, CA Gherkin, backlog |
+
+**Ce qu'il fait :**
+1. Lit l'analyse SPECS (sortie de l'agent précédent)
+2. Crée une US par exigence fonctionnelle (décompose si complexe)
+3. Rédige les CA en Gherkin condensé (Given/When/Then)
+4. Applique ISTQB : partitionnement d'équivalence, valeurs limites, tables de décision
+5. Format : `US-001 — Titre`, `CA-001` (nominal), `CA-002` (alternatif), `CA-003` (erreur)
+
+---
+
+### `max-gherkin-jira.agent.md`
+
+| Propriété | Valeur |
+|---|---|
+| **Nom** | MAX — Générateur Gherkin & JIRA |
+| **Modèle** | Claude Sonnet 4.5 (copilot) |
+| **Outils** | `read`, `search` + **6 outils MCP Atlassian** |
+| **Déclenchement** | scénarios Gherkin, BDD, publier tests JIRA, Xray, @xray |
+
+**Ce qu'il fait :**
+1. Lit les US + CA (ou charge depuis JIRA si clé fournie)
+2. Génère les scénarios Gherkin complets (`# language: fr`, `@fonctionnel @regression @xray`)
+3. Couvre nominal, alternatif, erreur, valeurs limites (`Plan du scénario:`)
+4. Propose pour validation avant publication
+5. Publie dans JIRA via MCP sur confirmation explicite
+
+---
+
+## 5. Prompts (`.github/prompts/`)
+
+Utilisables via `/max-...` dans Copilot Chat. Complètent ou orchestrent les agents.
+
+| Fichier | Rôle |
+|---|---|
+| `max-specs-analyzer.prompt.md` | Instruction fine pour l'analyse SPECS (format, contraintes) |
+| `max-specs-to-us.prompt.md` | Transformation exigences → US selon ISTQB |
+| `max-us-to-gherkin-jira.prompt.md` | US + CA → Gherkin + publication JIRA (pipeline unique) |
+| `max-pipeline-complet.prompt.md` | Pipeline bout-en-bout : SPECS → US → Gherkin → JIRA |
+
+---
+
+## 6. MCP — Model Context Protocol
+
+### Connexion Atlassian JIRA (`mcp-jira-setup.instructions.md`)
+
+Configuré dans `.vscode/mcp.json`. Utilisé **uniquement** par l'agent `max-gherkin-jira.agent.md` dans VS Code Copilot Chat.
+
+```
+VS Code Copilot Chat
+       │
+       ▼
+MCP Atlassian Server (npx @modelcontextprotocol/server-atlassian-jira)
+       │
+       ▼ Bearer PAT JIRA
+JIRA Server : https://jira.net.extra.laposte.fr/jira
+```
+
+**Outils MCP disponibles :**
+
+| Outil MCP | Usage dans MAX |
+|---|---|
+| `mcp_atlassian_atl_getVisibleJiraProjects` | Lister les projets pour choisir la destination |
+| `mcp_atlassian_atl_getJiraIssue` | Charger une US existante depuis JIRA (clé PROJ-123) |
+| `mcp_atlassian_atl_createJiraIssue` | Créer un ticket Test avec le Gherkin |
+| `mcp_atlassian_atl_editJiraIssue` | Mettre à jour un ticket existant |
+| `mcp_atlassian_atl_addCommentToJiraIssue` | Ajouter le Gherkin en commentaire |
+| `mcp_atlassian_atl_fetch` | Appels REST JIRA génériques |
+
+> **Note :** La publication web (bouton "Publier dans JIRA") utilise l'API REST JIRA directement (back-max), **pas** le MCP. Le MCP est réservé à l'agent VS Code Copilot Chat.
+
+---
+
+## 7. Intégration JIRA REST (back-max)
+
+Appels directs depuis Node.js (module `https`), sans MCP.
+
+| Endpoint JIRA | Méthode | Usage |
+|---|---|---|
+| `/rest/api/2/myself` | GET | Vérification PAT JIRA à la connexion |
+| `/rest/api/2/issue/{key}` | GET | Chargement ticket source (US/Exigence) |
+| `/rest/api/2/issue/{key}` | PUT | Mise à jour description + labels après création |
+| `/rest/api/2/issue/{key}` | DELETE | Annulation d'un ticket créé |
+| `/rest/raven/1.0/import/feature?projectKey=` | POST multipart | **Import Xray** : feature file Gherkin → tickets Test |
+
+**Payload de mise à jour post-import :**
+```json
+{
+  "fields": {
+    "description": "Test du CA-001 - Titre du scénario\nCe test couvre la Fonctionnalité US-001 - Titre de la US",
+    "labels": ["Généré_par_IA_MAX"]
+  }
+}
+```
+
+---
+
+## 8. LLM — Proxy Copilot VS Code
+
+### `vscode-copilot-proxy/` — Extension VS Code
+
+Expose `vscode.lm` (GitHub Copilot) en tant que serveur HTTP compatible API OpenAI sur **port 3099**.
+
+```
+back-max (routes/specs.js, routes/tests.js)
+    │  POST http://127.0.0.1:3099/v1/chat/completions
+    ▼
+vscode-copilot-proxy extension (port 3099)
+    │  vscode.lm.sendRequest(model, messages)
+    ▼
+GitHub Copilot LLM (modèle configuré dans config.env)
+```
+
+**Configuration (`dev-conf-docker/config.env`) :**
+```env
+LLM_BASE_URL=http://127.0.0.1:3099/v1
+GITHUB_TOKEN=copilot-proxy
+GITHUB_MODEL=gpt-5.4        # famille de modèle transmise à vscode.lm
+```
+
+**Installation :** `Ctrl+Shift+P` → *Tasks: Run Task* → **Installer MAX Copilot Proxy**
+
+---
+
+## 9. Authentification et sécurité
+
+### Flux de connexion
+
+```
+1. Utilisateur saisit PAT JIRA dans login.html
+2. POST /max-auth/login → back-max vérifie auprès de /rest/api/2/myself
+3. Succès → sessionId (32 octets aléatoires) stocké côté serveur (8h TTL)
+           → sessionId + user stockés dans sessionStorage navigateur
+4. Chaque requête API include { sessionId } → back-max valide via resolveTokenFromSession()
+5. Déconnexion : POST /max-auth/logout → session invalidée + redirect login.html
+```
+
+### Mode DEV_MODE
+
+```env
+DEV_MODE=true   # bypass si JIRA inaccessible (hors VPN La Poste)
+```
+- Si token vide/générique ou JIRA timeout → utilisateur "Dev User" créé automatiquement
+- Ne jamais activer en production
+
+---
+
+## 10. Pipeline complet bout-en-bout
+
+```
+  Document SPECS (.md / .docx / ticket JIRA)
+          │
+          ▼
+  ┌─────────────────────────────────┐
+  │  Étape 1 — Analyse SPECS        │  Agent : MAX — Analyseur de SPECS
+  │  Extraction EF-001, acteurs,    │  Route : POST /specs-app/analyze-stream
+  │  ambiguïtés                     │
+  └─────────────┬───────────────────┘
+                │
+                ▼
+  ┌─────────────────────────────────┐
+  │  Étape 2 — Génération US + CA   │  Agent : MAX — Générateur US & CA
+  │  US-001 à US-00n                │  Route : POST /specs-app/generate-us-stream
+  │  CA-001 (nominal/alternatif/    │
+  │  erreur) en Gherkin condensé    │
+  └─────────────┬───────────────────┘
+                │
+                ▼
+  ┌─────────────────────────────────┐
+  │  Étape 3 — Génération Gherkin   │  Agent : MAX — Générateur Gherkin & JIRA
+  │  Feature files complets         │  Route : POST /tests-app/chat-stream
+  │  # language: fr                 │
+  │  @fonctionnel @regression @xray │
+  │  Scénario: Titre — CA-001       │
+  └─────────────┬───────────────────┘
+                │
+                ▼
+  ┌─────────────────────────────────┐
+  │  Étape 4 — Publication JIRA     │  Route : POST /tests-app/api/jira/publish
+  │  Import Xray multipart          │  API JIRA : /rest/raven/1.0/import/feature
+  │  1 ticket Test / Scénario       │
+  │  Description : "Test du CA-001  │
+  │    - Ce test couvre US-001"     │
+  │  Label : Généré_par_IA_MAX      │
+  └─────────────────────────────────┘
+```
+
+---
+
+## 11. Structure des dossiers
+
+```
+MAX_PI_V2/
+├── .github/
+│   ├── agents/
+│   │   ├── max-specs-analyzer.agent.md    ← Agent Copilot : analyse SPECS
+│   │   ├── max-us-generator.agent.md      ← Agent Copilot : génération US/CA
+│   │   └── max-gherkin-jira.agent.md      ← Agent Copilot : Gherkin + JIRA (MCP)
+│   ├── prompts/
+│   │   ├── max-pipeline-complet.prompt.md
+│   │   ├── max-specs-analyzer.prompt.md
+│   │   ├── max-specs-to-us.prompt.md
+│   │   └── max-us-to-gherkin-jira.prompt.md
+│   ├── instructions/
+│   │   └── mcp-jira-setup.instructions.md ← Guide configuration MCP Atlassian
+│   └── copilot-instructions.md            ← Instructions globales Copilot
+│
+├── back-max/                              ← Serveur Node.js principal (port 8082)
+│   ├── server.js                          ← Entrée : auth, routing, spawn Cucumber
+│   ├── routes/
+│   │   ├── specs.js                       ← /specs-app/* : analyse SPECS + US
+│   │   └── tests.js                       ← /tests-app/* : Gherkin + JIRA
+│   ├── middleware/
+│   │   └── sessions.js                    ← Store sessions PAT JIRA
+│   ├── config/
+│   │   └── server.config.json
+│   └── services/
+│       ├── back-cucumber/                 ← Processus enfant port 3002
+│       ├── front-specs_analyzer/          ← UI analyseur SPECS (static)
+│       ├── front-tests_generator/         ← UI générateur tests (static)
+│       ├── front-cucumber/                ← UI viewer Cucumber (static)
+│       ├── specs/temp/                    ← Fichier temp.md SPECS
+│       └── tests/                         ← tests.md formaté Xray
+│
+├── front-max/                             ← Menu principal + login
+│   ├── index.html                         ← Shell app (menu + chat + modales)
+│   ├── login.html                         ← Page d'authentification PAT JIRA
+│   └── app.js                             ← Logique menu, chat, publication JIRA
+│
+├── dev-conf-docker/
+│   ├── config.env                         ← Variables d'environnement (LLM, JIRA)
+│   └── docker-compose.yml                 ← Déploiement Docker
+│
+└── vscode-copilot-proxy/                  ← Extension VS Code proxy LLM
+    ├── extension.js                       ← Serveur HTTP port 3099
+    └── package.json
+```
+
+---
+
+## 12. Ports et services
+
+| Service | Port | Description |
+|---|---|---|
+| **back-max** | **8082** | Serveur principal (front + API) |
+| **back-cucumber** | **3002** | Processus enfant (interne, non exposé) |
+| **vscode-copilot-proxy** | **3099** | Proxy LLM VS Code (local uniquement) |
+| **JIRA La Poste** | **443** (HTTPS) | `jira.net.extra.laposte.fr` (VPN requis) |
