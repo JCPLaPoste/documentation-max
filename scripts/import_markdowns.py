@@ -14,11 +14,6 @@ files_to_copy = [
     (os.path.join(prod_dir, "max-git-v6", "doc", "ARCHITECTURE_MAX_V6.md"), os.path.join(docs_dir, "architecture", "architecture.md")),
     (os.path.join(prod_dir, "max-git-v6", "back-max", "README.md"), os.path.join(docs_dir, "modules", "backend.md")),
     (os.path.join(prod_dir, "max-git-v6", "front-max", "README.md"), os.path.join(docs_dir, "modules", "frontend.md")),
-    (os.path.join(prod_dir, "max-git-v6", "agents", "README.md"), os.path.join(docs_dir, "modules", "agents.md")),
-    (os.path.join(prod_dir, "max-git-v6", "dev-conf-docker", "README.md"), os.path.join(docs_dir, "modules", "docker.md")),
-    (os.path.join(prod_dir, "max-git-v6", "vscode-copilot-proxy", "README.md"), os.path.join(docs_dir, "modules", "proxy.md")),
-    (os.path.join(prod_dir, "Analyse_BIP_V5", "README.md"), os.path.join(docs_dir, "modules", "bip-analyzer.md")),
-    (os.path.join(prod_dir, "Parse_Cucumber_V2", "README.md"), os.path.join(docs_dir, "modules", "cucumber.md")),
 ]
 
 for src, dst in files_to_copy:

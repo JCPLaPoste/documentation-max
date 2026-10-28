@@ -73,7 +73,4 @@ Explorez la documentation dÃ©taillÃ©e des composants du projet :
 
 - **[Backend (back-max)](modules/backend.md)** : API REST, orchestration des agents, proxies d'appels.
 - **[Frontend (front-max)](modules/frontend.md)** : Interface utilisateur unifiÃ©e, gestion de sessions.
-- **[Agents VS Code & Prompts](modules/agents.md)** : Agents Copilot spÃ©cialisÃ©s (`max-specs-analyzer`, `max-us-generator`, etc.).
-- **[Docker & Configuration](modules/docker.md)** : DÃ©ploiement multi-conteneurs et configurations d'environnement.
-- **[Proxy LLM VS Code Copilot](modules/proxy.md)** : Extension VS Code servant de passerelle OpenAI-compatible vers Copilot.
-- **[Analyseur BIP](modules/bip-analyzer.md)** & **[Cucumber Parser V2](modules/cucumber.md)** : Microservices spÃ©cialisÃ©s.
+

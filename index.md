@@ -42,8 +42,3 @@ MAX est une plateforme d'IA générative conçue pour accélérer et fiabiliser 
 |---|---|---|
 | **back-max** | Serveur API REST, orchestration des agents, routes JIRA et LLM | [Consulter](docs/modules/backend.html) |
 | **front-max** | Interface web utilisateur unifiée (Analyseur + BDD) | [Consulter](docs/modules/frontend.html) |
-| **agents** | Instructions et prompts des agents Copilot | [Consulter](docs/modules/agents.html) |
-| **dev-conf-docker** | Fichiers docker-compose et environnements de déploiement | [Consulter](docs/modules/docker.html) |
-| **vscode-copilot-proxy**| Extension VS Code proxyfiant Copilot en endpoint OpenAI | [Consulter](docs/modules/proxy.html) |
-| **Analyse_BIP_V5** | Microservice d'analyse et réorganisation BIP | [Consulter](docs/modules/bip-analyzer.html) |
-| **Parse_Cucumber_V2** | Parser et validateurs de scénarios Cucumber | [Consulter](docs/modules/cucumber.html) |

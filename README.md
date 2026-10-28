@@ -1,4 +1,4 @@
-﻿# 📚 Documentation MAX V6
+# 📚 Documentation MAX V6
 
 Site officiel : **[https://jcplaposte.github.io/documentation-max/](https://jcplaposte.github.io/documentation-max/)**
 
@@ -27,11 +27,6 @@ Le site est généré via **MkDocs Material** avec :
 - `modules/` :
   - `backend.md` : Serveur back-max & microservices
   - `frontend.md` : IHM front-max
-  - `agents.md` : Agents VS Code et prompts Copilot
-  - `docker.md` : Configuration Docker & docker-compose
-  - `proxy.md` : Extension VS Code Proxy Copilot
-  - `bip-analyzer.md` : Microservice d'analyse BIP
-  - `cucumber.md` : Parser Gherkin / Cucumber V2
 
 ---
 
