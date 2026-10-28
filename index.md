@@ -1,4 +1,4 @@
-﻿---
+---
 layout: default
 title: "Documentation MAX V6"
 ---
@@ -19,7 +19,7 @@ MAX est une plateforme d'IA générative conçue pour accélérer et fiabiliser 
 
 ## 🚀 Accès rapide aux guides
 
-* **[� Présentation de MAX V6](docs/guide/presentation.html)** : Fonctionnalités, bénéfices, agents IA et use cases.
+* **[📋 Présentation de MAX V6](docs/guide/presentation.html)** : Fonctionnalités, bénéfices, agents IA et use cases.
 * **[⚙️ Guide d'installation complet](docs/guide/installation.html)** : Configuration du proxy VS Code Copilot, Docker et déploiement.
 * **[🏛️ Architecture technique](docs/architecture/architecture.html)** : Schéma des microservices, ports et flux réseau.
 * **[🚀 Démarrer en 5 minutes (Quick Start)](docs/guide/quick-start.html)** : Prérequis, lancement du serveur, connexion et premiers pas.
