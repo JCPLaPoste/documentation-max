@@ -76,12 +76,12 @@ Se connecter à https://github.com/settings/copilot/features
 
 installer l'extension officielle French Language Pack for Visual Studio Code depuis le marché Visual Studio Marketplace.
 Étapes pour changer la langue
-> Ouvrir Visual Studio Code.
-> Cliquer sur l'icône des Extensions dans la barre latérale gauche (ou appuyez sur Ctrl + Maj + X / Cmd + Maj + X).
-> Taper "French" dans la barre de recherche.
-> Sélectionner l'extension French Language Pack for Visual Studio Code publiée par Microsoft et cliquez sur Install.
-> Une notification apparaît en bas à droite proposant de redémarrer l'application ;
-> cliquer sur Change Language et Redémarrer VSCODE.
+> 1. Ouvrir Visual Studio Code.
+> 2. Cliquer sur l'icône des Extensions dans la barre latérale gauche (ou appuyez sur Ctrl + Maj + X / Cmd + Maj + X).
+> 3. Taper "French" dans la barre de recherche.
+> 4. Sélectionner l'extension French Language Pack for Visual Studio Code publiée par Microsoft et cliquez sur Install.
+> 5. Une notification apparaît en bas à droite proposant de redémarrer l'application ;
+> 6. Cliquer sur Change Language et Redémarrer VSCODE.
 
 Si la notification ne s'affiche pas ou si l'interface reste en anglais :
 > Ouvrir la palette de commandes avec le raccourci Ctrl + Maj + P (Windows/Linux) ou Cmd + Maj + P (Mac).
