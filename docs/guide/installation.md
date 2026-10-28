@@ -84,10 +84,10 @@ installer l'extension officielle French Language Pack for Visual Studio Code dep
 > 6. Cliquer sur Change Language et Redémarrer VSCODE.
 
 Si la notification ne s'affiche pas ou si l'interface reste en anglais :
-> Ouvrir la palette de commandes avec le raccourci Ctrl + Maj + P (Windows/Linux) ou Cmd + Maj + P (Mac).
-> Taper "Configure Display Language" (ou Configurer la langue d'affichage) et valider avec Entrée.
-> Choisir français dans la liste déroulante.
-> Redémarrer VS CODE pour appliquer les modifications.
+> 1. Ouvrir la palette de commandes avec le raccourci Ctrl + Maj + P (Windows/Linux) ou Cmd + Maj + P (Mac).
+> 2. Taper "Configure Display Language" (ou Configurer la langue d'affichage) et valider avec Entrée.
+> 3. Choisir français dans la liste déroulante.
+> 4. Redémarrer VS CODE pour appliquer les modifications.
 
 
 ## Configuration du Proxy pour Utilisateurs Externes (DiversIT)
@@ -101,12 +101,12 @@ La mention suivante s'affiche sur la page de connexion MAX pour rappel :
 
 ### Pourquoi un proxy est nécessaire ?
 
-Les utilisateurs externes (DiversIT) accèdent aux services La Poste (JIRA, API MAX) via un proxy réseau fourni par leur responsable technique. Sans cette configuration, les appels réseau échoueront.
+> Les utilisateurs externes (DiversIT) accèdent aux services La Poste (JIRA, API MAX) via un proxy réseau fourni par leur responsable technique. Sans cette configuration, les appels réseau échoueront.
 
 ### Configuration du proxy dans VS Code
 
-1. Ouvrez les paramètres VS Code : `Ctrl+Shift+P` → `Preferences: Open Settings (JSON)`
-2. Ajoutez ou vérifiez les entrées suivantes :
+> 1. Ouvrez les paramètres VS Code : `Ctrl+Shift+P` → `Preferences: Open Settings (JSON)`
+> 2. Ajoutez ou vérifiez les entrées suivantes :
 
 ```json
 {
@@ -132,16 +132,16 @@ NO_PROXY=localhost,127.0.0.1
 ### Vérification
 
 Une fois le proxy configuré, vérifiez que vous accédez bien à :
-- `http://localhost:8082` — serveur MAX local (ne passe pas par le proxy)
-- `https://jira.net.extra.laposte.fr/jira` — JIRA La Poste (doit passer par le proxy)
+> - `http://localhost:8082` — serveur MAX local (ne passe pas par le proxy)
+> - `https://jira.net.extra.laposte.fr/jira` — JIRA La Poste (doit passer par le proxy)
 
 ---
 
 ## Étape 1 — Ouvrir le projet dans VS Code
 
-1. Lancez **VS Code**
-2. Faites `Fichier > Ouvrir le dossier…` et sélectionnez le dossier `MAX_V6`
-3. VS Code charge le workspace — attendez que les extensions s'activent
+> 1. Lancez **VS Code**
+> 2. Faites `Fichier > Ouvrir le dossier…` et sélectionnez le dossier `MAX_V6`
+> 3. VS Code charge le workspace — attendez que les extensions s'activent
 
 ---
 
@@ -152,16 +152,16 @@ Elle doit être installée **une seule fois** sur votre VS Code.
 
 ### Via la tâche VS Code (recommandé)
 
-1. Ouvrez la palette de commandes : `Ctrl+Shift+P`
-2. Tapez : `Tasks: Run Task`
-3. Sélectionnez : **Installer MAX Copilot Proxy**
-4. Attendez le message : `✅ Extension MAX Copilot Proxy installée.`
-5. **Redémarrez VS Code** pour activer l'extension
+> 1. Ouvrez la palette de commandes : `Ctrl+Shift+P`
+> 2. Tapez : `Tasks: Run Task`
+> 3. Sélectionnez : **Installer MAX Copilot Proxy**
+> 4. Attendez le message : `✅ Extension MAX Copilot Proxy installée.`
+> 5. **Redémarrez VS Code** pour activer l'extension
 
 ### Vérification
 
-Après redémarrage, l'extension doit démarrer automatiquement le proxy sur le port **3099**.
-Vous pouvez vérifier via la palette de commandes : `Ctrl+Shift+P` → `MAX: Statut du proxy Copilot`
+> Après redémarrage, l'extension doit démarrer automatiquement le proxy sur le port **3099**.
+> Vous pouvez vérifier via la palette de commandes : `Ctrl+Shift+P` → `MAX: Statut du proxy Copilot`
 
 ---
 
@@ -256,10 +256,10 @@ La page de connexion s'affiche — saisissez votre **Personal Access Token JIRA*
 > ⚠️ **Utilisateurs Externes (DiversIT)** : si vous voyez le bandeau *"veuillez configurer votre Proxy"* sur la page de connexion, assurez-vous d'avoir suivi la section **[Configuration du Proxy](#configuration-du-proxy-pour-utilisateurs-externes-diversit)** avant de saisir votre token.
 
 **Obtenir un PAT JIRA :**
-1. Connectez-vous à `https://jira.net.extra.laposte.fr/jira`
-2. Cliquez sur votre avatar → **Profile** → **Personal Access Tokens**
-3. Créez un token (nom : `MAX Application`, expiration : 90 jours)
-4. Copiez-le — il ne s'affiche qu'une seule fois
+> 1. Connectez-vous à `https://jira.net.extra.laposte.fr/jira`
+> 2. Cliquez sur votre avatar → **Profile** → **Personal Access Tokens**
+> 3. Créez un token (nom : `MAX Application`, expiration : 90 jours)
+> 4. Copiez-le — il ne s'affiche qu'une seule fois
 
 ---
 
@@ -341,11 +341,11 @@ taskkill /f /im node.exe
 
 #### Via la palette de commandes VS Code (recommandé)
 
-1. Ouvrez la palette : `Ctrl+Shift+P`
-2. Tapez : `Extensions: Show Installed Extensions`
-3. Recherchez **MAX Copilot Proxy** dans la liste
-4. Cliquez sur l'icône de désinstallation (poubelle)
-5. **Redémarrez VS Code** pour finaliser la suppression
+> 1. Ouvrez la palette : `Ctrl+Shift+P`
+> 2. Tapez : `Extensions: Show Installed Extensions`
+> 3. Recherchez **MAX Copilot Proxy** dans la liste
+> 4. Cliquez sur l'icône de désinstallation (poubelle)
+> 5. **Redémarrez VS Code** pour finaliser la suppression
 
 #### Via le terminal externe à VSCODE
 
@@ -371,8 +371,8 @@ Remove-Item -Recurse -Force .\back-max\node_modules
 
 Si vous souhaitez supprimer complètement le projet MAX de votre poste :
 
-1. Fermez VS Code
-2. Supprimez le dossier `MAX_V6` via l'Explorateur Windows ou via PowerShell :
+> 1. Fermez VS Code
+> 2. Supprimez le dossier `MAX_V6` via l'Explorateur Windows ou via PowerShell :
 
 ```powershell
 Remove-Item -Recurse -Force "C:\chemin\vers\MAX_V6"
@@ -382,8 +382,8 @@ Remove-Item -Recurse -Force "C:\chemin\vers\MAX_V6"
 
 Si vous avez configuré des paramètres spécifiques à MAX dans VS Code :
 
-1. Ouvrez `Ctrl+Shift+P` → `Preferences: Open Settings (JSON)`
-2. Supprimez les entrées relatives à `max-copilot-proxy` si présentes
+> 1. Ouvrez `Ctrl+Shift+P` → `Preferences: Open Settings (JSON)`
+> 2. Supprimez les entrées relatives à `max-copilot-proxy` si présentes
 
 ---
 
