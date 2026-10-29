@@ -12,8 +12,6 @@ files_to_copy = [
     (os.path.join(prod_dir, "max-git-v6", "doc", "modop_Install_MAX_V6 - V2.md"), os.path.join(docs_dir, "guide", "installation.md")),
     (os.path.join(prod_dir, "max-git-v6", "doc", "Notes-de-Version_V6.md"), os.path.join(docs_dir, "guide", "release-notes.md")),
     (os.path.join(prod_dir, "max-git-v6", "doc", "ARCHITECTURE_MAX_V6.md"), os.path.join(docs_dir, "architecture", "architecture.md")),
-    (os.path.join(prod_dir, "max-git-v6", "back-max", "README.md"), os.path.join(docs_dir, "modules", "backend.md")),
-    (os.path.join(prod_dir, "max-git-v6", "front-max", "README.md"), os.path.join(docs_dir, "modules", "frontend.md")),
 ]
 
 for src, dst in files_to_copy:

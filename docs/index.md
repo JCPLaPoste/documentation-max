@@ -65,12 +65,3 @@ flowchart LR
 3. **ðŸŽ« IntÃ©gration JIRA / Xray** : Import direct depuis un ticket JIRA et publication automatisÃ©e des tests crÃ©Ã©s avec traÃ§abilitÃ©.
 4. **ðŸ”’ Respect de la confidentialitÃ© des donnÃ©es** : Fonctionnement via GitHub Copilot Proxy ou modÃ¨les d'entreprise sans fuite de donnÃ©es.
 
----
-
-## ðŸ“¦ Modules et composants
-
-Explorez la documentation dÃ©taillÃ©e des composants du projet :
-
-- **[Backend (back-max)](modules/backend.md)** : API REST, orchestration des agents, proxies d'appels.
-- **[Frontend (front-max)](modules/frontend.md)** : Interface utilisateur unifiÃ©e, gestion de sessions.
-

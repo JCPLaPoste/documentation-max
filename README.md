@@ -24,9 +24,6 @@ Le site est généré via **MkDocs Material** avec :
   - `release-notes.md` : Notes de version V6
 - `architecture/` :
   - `architecture.md` : Architecture technique, composants, ports et flux
-- `modules/` :
-  - `backend.md` : Serveur back-max & microservices
-  - `frontend.md` : IHM front-max
 
 ---
 

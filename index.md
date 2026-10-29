@@ -34,11 +34,3 @@ MAX est une plateforme d'IA générative conçue pour accélérer et fiabiliser 
 3. **🎫 Intégration JIRA / Xray** : Import direct depuis un ticket JIRA et publication automatisée des tests créés avec traçabilité.
 4. **🔒 Confidentialité des données** : Fonctionnement via GitHub Copilot Proxy ou modèles d'entreprise sans fuite de données hors La Poste.
 
----
-
-## 📦 Modules et composants du projet
-
-| Composant | Rôle | Documentation |
-|---|---|---|
-| **back-max** | Serveur API REST, orchestration des agents, routes JIRA et LLM | [Consulter](docs/modules/backend.html) |
-| **front-max** | Interface web utilisateur unifiée (Analyseur + BDD) | [Consulter](docs/modules/frontend.html) |
