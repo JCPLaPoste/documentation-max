@@ -5,7 +5,7 @@ title: "Documentation MAX V6"
 
 # Documentation officielle MAX V6
 
-Bienvenue sur la documentation du projet **MAX V6** (Module d'Assistance eXpert).
+Bienvenue sur la documentation du projet **MAX V6**.
 
 MAX est une plateforme d'IA générative conçue pour accélérer et fiabiliser la chaîne de delivery agile : de l'analyse des spécifications fonctionnelles jusqu'à la publication des scénarios de test dans JIRA / Xray.
 

@@ -1,5 +1,5 @@
 ﻿title: "Documentation MAX V6"
-description: "Documentation technique et fonctionnelle de la plateforme MAX V6 (Module d'Assistance eXpert)"
+description: "Documentation technique et fonctionnelle de la plateforme MAX V6"
 theme: jekyll-theme-cayman
 kramdown:
   toc_levels: 1..3
