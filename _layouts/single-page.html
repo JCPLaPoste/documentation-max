@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'fr' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <link rel="stylesheet" href="{{ '/assets/css/max-docs.css' | relative_url }}">
+</head>
+<body>
+  {% assign docs = site.sections | sort: 'order' %}
+
+  <button class="menu-toggle" type="button" aria-label="Ouvrir le menu" aria-controls="sidebar" aria-expanded="false">&#9776;</button>
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#top">
+      <span class="brand-icon">{{ site.brand_icon | default: '🧠' }}</span>
+      <span class="brand-text">
+        <strong>MAX V6</strong>
+        <small>Documentation complète</small>
+      </span>
+    </a>
+    <nav>
+      <ul>
+        {% for doc in docs %}
+        <li><a href="#{{ doc.slug }}" data-target="{{ doc.slug }}">{{ forloop.index0 }}.&nbsp;{{ doc.icon }} {{ doc.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="content" id="top">
+    <header class="page-header">
+      <h1>{{ page.title | default: site.title }}</h1>
+      <p>{{ docs | size }} documents regroupés sur une seule page.</p>
+    </header>
+
+    {% for doc in docs %}
+    <section class="card" id="{{ doc.slug }}">
+      <h2>{{ forloop.index0 }}.&nbsp;{{ doc.icon }} {{ doc.title }}</h2>
+      {% if doc.summary %}<p class="summary">{{ doc.summary }}</p>{% endif %}
+      <div class="doc-body">
+        {{ doc.content }}
+      </div>
+    </section>
+    {% endfor %}
+
+    <footer class="page-footer">
+      <a href="#top">&uarr; Haut de page</a>
+    </footer>
+  </main>
+
+  <script src="{{ '/assets/js/max-docs.js' | relative_url }}"></script>
+</body>
+</html>
