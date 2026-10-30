@@ -32,7 +32,7 @@
   <main class="content" id="top">
     <header class="page-header">
       <h1>{{ page.title | default: site.title }}</h1>
-      <p>{{ docs | size }} documents regroupés sur une seule page.</p>
+      <h2>{{ site.description }}</h2>
     </header>
 
     {% for doc in docs %}

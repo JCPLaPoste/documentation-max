@@ -79,7 +79,7 @@ body {
   font-size: 2.4rem;
   color: var(--title);
 }
-.page-header p { margin: 0 0 32px; color: var(--muted); font-size: 1.1rem; }
+.page-header h2 { margin: 0 0 32px; color: var(--muted); font-size: 1.3rem; font-weight: 500; }
 
 .card {
   background: var(--card-bg);
