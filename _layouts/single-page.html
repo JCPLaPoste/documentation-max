@@ -23,7 +23,7 @@
     <nav>
       <ul>
         {% for doc in docs %}
-        <li><a href="#{{ doc.slug }}" data-target="{{ doc.slug }}">{{ forloop.index0 }}.&nbsp;{{ doc.icon }} {{ doc.title }}</a></li>
+        <li><a href="#{{ doc.slug }}" data-target="{{ doc.slug }}">{{ forloop.index }}.&nbsp;{{ doc.icon }} {{ doc.title }}</a></li>
         {% endfor %}
       </ul>
     </nav>
@@ -37,7 +37,7 @@
 
     {% for doc in docs %}
     <section class="card" id="{{ doc.slug }}">
-      <h2>{{ forloop.index0 }}.&nbsp;{{ doc.icon }} {{ doc.title }}</h2>
+      <h2>{{ forloop.index }}.&nbsp;{{ doc.icon }} {{ doc.title }}</h2>
       {% if doc.summary %}<p class="summary">{{ doc.summary }}</p>{% endif %}
       <div class="doc-body">
         {{ doc.content }}
