@@ -3,7 +3,7 @@ title: "Présentation"
 icon: "📋"
 order: 0
 ---
-## Maintenance Augmentée et Accélérée des Tests · La Poste
+## MAX : Maintenance Augmentée et Accélérée des Tests · La Poste
 
 ---
 
