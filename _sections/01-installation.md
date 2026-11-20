@@ -131,6 +131,11 @@ Une fois le proxy configuré, vérifiez que vous accédez bien à :
 - `https://jira.net.extra.laposte.fr/jira` — JIRA La Poste (doit passer par le proxy)
 
 ---
+### Récupération des sources MAX_V6
+
+Le fichier zip se trouve : [MAX_V6](https://laposte.sharepoint.com/:f:/r/sites/TestingSafe-OutilsdeTestIA/Documents%20partages/MAX/MAX_V6?d=waa917ad84e9142199c11ed7ca37cd8c3&csf=1&web=1&e=Bq1QTo)
+
+---
 
 ## Étape 1 — Ouvrir le projet dans VS Code
 
