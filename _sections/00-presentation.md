@@ -31,7 +31,7 @@ MAX n'est **pas** un simple générateur de texte. C'est un assistant métier ex
 - Transforme instantanément un cahier des charges en User Stories structurées et priorisées
 - Extrait automatiquement les acteurs, exigences fonctionnelles (EF-001…) et les ambiguïtés
 - Produit des US au format standard : *"En tant que [rôle], je veux [action], afin de [bénéfice]"*
-- Génère les critères d'acceptation Given/When/Then attachés à chaque US
+- Génère les critères d'acceptation Soit (ou étant donné que)/Quand/Alors attachés à chaque US
 - **Gain estimé : 60 à 80 % du temps de rédaction des US**
 
 ### Pour le **Test Manager**
